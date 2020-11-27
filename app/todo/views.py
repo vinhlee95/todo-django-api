@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from core.models.todo import Todo
-from todo.serializer import TodoSerializer
+from .serializer import TodoSerializer
 
 class TodoViewSet(viewsets.ModelViewSet):
 	"""Todo viewset"""

@@ -26,10 +26,20 @@ class TodoApiTest(TestCase):
 		res = self.client.get(TODO_URL)
 
 		serializer = TodoSerializer(Todo.objects.all(), many=True)
-		print(serializer.data)
 
 		# Assertions
 		self.assertEqual(res.status_code, status.HTTP_200_OK)
 		self.assertEqual(res.data, serializer.data)
+
+	def test_create_todo(self):
+		"""Test if we can create a new todo"""
+		payload = {'title': 'Go to school', 'completed': False}
+		res = self.client.post(TODO_URL, payload)
+		serializer = TodoSerializer(Todo.objects.get(id=res.data['id']))
+
+		# Assertions
+		self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+		self.assertEqual(res.data, serializer.data)
+
 
 
