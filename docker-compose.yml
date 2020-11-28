@@ -24,3 +24,10 @@ services:
       - POSTGRES_DB=todo-dev
       - POSTGRES_USER=vinhle
       - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+
+volumes:
+  dbdata:
