@@ -6,6 +6,8 @@ from rest_framework import status
 from core.models.todo import Todo
 from todo.serializer import TodoSerializer
 
+from core.tests.authenticated_test_case import AuthenticatedTestCase
+
 TODO_URL = reverse('todo:todo-list')
 
 def get_detail_url(id):
@@ -16,12 +18,24 @@ def mock_todo(title='Mocked todo', **args):
 	"""Mock a todo object and save it to db"""
 	return Todo.objects.create(title=title, **args)
 
-class TodoApiTest(TestCase):
+class PublicTodoApiTest(TestCase):
+	"""Test for public Todo API"""
+	def setUp(self):
+		"""Setup that run before the test case"""
+		self.client = APIClient()
+
+	def test_authentication(self):
+		"""Test server throws error when client is unauthenticated"""
+		client = APIClient()
+		res = client.get(TODO_URL)
+		self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+class TodoApiTest(AuthenticatedTestCase):
 	"""Tests for Todo API"""
 
 	def setUp(self):
 		"""Setup that run before the test case"""
-		self.client = APIClient()
+		super().setUp()
 
 	def test_retrieve_todos(self):
 		"""Test if we can get all todos in db"""
