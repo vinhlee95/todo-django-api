@@ -7,3 +7,7 @@ class TodoSerializer(serializers.ModelSerializer):
 		model = Todo
 		fields = ('id', 'title', 'completed')
 		read_only_fields = ('id',)
+
+	def create(self, validated_data):
+		"""Create a new todo"""
+		return Todo.objects.create(**validated_data)
