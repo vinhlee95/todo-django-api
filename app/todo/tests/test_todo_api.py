@@ -12,7 +12,7 @@ TODO_URL = '/api/todos/'
 
 def get_detail_url(id):
 	"""Get URL for todo detail view"""
-	return reverse('todo:todo-detail', args=[id])
+	return f'{TODO_URL}{id}'
 
 def mock_todo(title='Mocked todo', **args):
 	"""Mock a todo object and save it to db"""
@@ -66,23 +66,23 @@ class TodoApiTest(AuthenticatedTestCase):
 
 		self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-	# def test_update_todo(self):
-	# 	"""Test if we can update the todo"""
-	# 	mocked_todo_payload = {
-	# 		'title': 'Do laundry',
-	# 		'completed': False
-	# 	}
-	# 	mocked_todo = mock_todo(**mocked_todo_payload)
-	# 	update_todo_payload = {
-	# 		'title': 'Skip laundry',
-	# 		'completed': True
-	# 	}
-	# 	res = self.client.put(get_detail_url(mocked_todo.id), update_todo_payload)
-	#
-	# 	# Assertions
-	# 	self.assertEqual(res.status_code, status.HTTP_200_OK)
-	# 	self.assertEqual(res.data['title'], update_todo_payload['title'])
-	# 	self.assertEqual(res.data['completed'], update_todo_payload['completed'])
+	def test_update_todo(self):
+		"""Test if we can update the todo"""
+		mocked_todo_payload = {
+			'title': 'Do laundry',
+			'completed': False
+		}
+		mocked_todo = mock_todo(**mocked_todo_payload)
+		update_todo_payload = {
+			'title': 'Skip laundry',
+			'completed': True
+		}
+		res = self.client.put(get_detail_url(mocked_todo.id), update_todo_payload)
+
+		# Assertions
+		self.assertEqual(res.status_code, status.HTTP_200_OK)
+		self.assertEqual(res.data['title'], update_todo_payload['title'])
+		self.assertEqual(res.data['completed'], update_todo_payload['completed'])
 
 
 

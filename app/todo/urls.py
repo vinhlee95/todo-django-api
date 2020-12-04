@@ -14,5 +14,6 @@ from .views import ListTodoView
 app_name = 'todo'
 
 urlpatterns = [
-	path('', ListTodoView.as_view())
+	path('', ListTodoView.as_view()),
+	path('<int:pk>', ListTodoView.as_view())
 ]

@@ -28,3 +28,16 @@ class ListTodoView(views.APIView):
 		if serializer.is_valid(raise_exception=True):
 			saved_todo = serializer.save()
 		return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+	def put(self, request, pk):
+		"""Update a todo"""
+		saved_todo = Todo.objects.get(id=pk)
+		if not saved_todo:
+			return Response('Cannot find todo by that id', status=status.HTTP_404_NOT_FOUND)
+		serializer = TodoSerializer(instance=saved_todo, data=request.data)
+		if serializer.is_valid(raise_exception=True):
+			serializer.save()
+		return Response(serializer.data)
+
+
+
