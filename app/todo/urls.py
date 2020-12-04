@@ -1,6 +1,6 @@
 from rest_framework import routers
 from django.urls import include, path
-from .views import CrateTodoView
+from .views import ListTodoView
 
 # Router implementation
 # ONLY used with a viewset
@@ -14,5 +14,5 @@ from .views import CrateTodoView
 app_name = 'todo'
 
 urlpatterns = [
-	path('', CrateTodoView.as_view(), name='create')
+	path('', ListTodoView.as_view())
 ]
