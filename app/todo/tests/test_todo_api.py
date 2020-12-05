@@ -84,10 +84,11 @@ class TodoApiTest(AuthenticatedTestCase):
 		self.assertEqual(res.data['title'], update_todo_payload['title'])
 		self.assertEqual(res.data['completed'], update_todo_payload['completed'])
 
+	def test_delete_todo(self):
+		"""Test if we can delete a todo"""
+		todo = mock_todo()
+		res = self.client.delete(get_detail_url(todo.id))
 
-
-
-
-
-
-
+		self.assertEqual(res.status_code, status.HTTP_200_OK)
+		with self.assertRaises(Exception):
+			Todo.objects.get(id=todo.id)

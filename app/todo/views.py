@@ -38,5 +38,11 @@ class ListTodoView(views.APIView):
 			serializer.save()
 		return Response(serializer.data)
 
+	def delete(self, request, pk):
+		"""Delete a todo"""
+		todo = get_object_or_404(Todo, id=pk)
+		todo.delete()
+		return Response({'message': 'success'})
+
 
 
