@@ -2,6 +2,7 @@ from rest_framework import viewsets, generics, mixins, \
 													views, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 
 from core.models.todo import Todo
 from .serializer import TodoSerializer
@@ -31,9 +32,7 @@ class ListTodoView(views.APIView):
 
 	def put(self, request, pk):
 		"""Update a todo"""
-		saved_todo = Todo.objects.get(id=pk)
-		if not saved_todo:
-			return Response('Cannot find todo by that id', status=status.HTTP_404_NOT_FOUND)
+		saved_todo = get_object_or_404(Todo, id=pk)
 		serializer = TodoSerializer(instance=saved_todo, data=request.data)
 		if serializer.is_valid(raise_exception=True):
 			serializer.save()
