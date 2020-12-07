@@ -1,6 +1,6 @@
 from rest_framework import routers
 from django.urls import include, path
-from .views import ListTodoView
+from .views import TodoView
 
 # Router implementation
 # ONLY used with a viewset
@@ -14,6 +14,6 @@ from .views import ListTodoView
 app_name = 'todo'
 
 urlpatterns = [
-	path('', ListTodoView.as_view()),
-	path('<int:pk>', ListTodoView.as_view())
+	path('', TodoView.as_view()),
+	path('<int:pk>', TodoView.as_view())
 ]
