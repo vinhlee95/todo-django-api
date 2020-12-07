@@ -3,6 +3,7 @@ from rest_framework import viewsets, generics, mixins, \
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
 from core.models.todo import Todo
 from .serializer import TodoSerializer
@@ -36,6 +37,17 @@ class ListTodoView(views.APIView):
 		serializer = TodoSerializer(instance=saved_todo, data=request.data)
 		if serializer.is_valid(raise_exception=True):
 			serializer.save()
+		return Response(serializer.data)
+
+	def patch(self, request, pk):
+		"""Partially update a todo"""
+		saved_todo = get_object_or_404(Todo, id=pk)
+		serializer = TodoSerializer(instance=saved_todo, data=request.data, partial=True)
+		if serializer.is_valid(raise_exception=True):
+			if request.data['completed']:
+				serializer.save(completed_by=request.user, completed_at=timezone.now())
+			else:
+				serializer.save()
 		return Response(serializer.data)
 
 	def delete(self, request, pk):

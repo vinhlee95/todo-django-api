@@ -92,3 +92,17 @@ class TodoApiTest(AuthenticatedTestCase):
 		self.assertEqual(res.status_code, status.HTTP_200_OK)
 		with self.assertRaises(Exception):
 			Todo.objects.get(id=todo.id)
+
+	def test_completed_todo(self):
+		"""Test if a todo is completed by an user"""
+		todo = mock_todo()
+		payload = {'completed': True}
+		res = self.client.patch(get_detail_url(todo.id), payload)
+
+		# Assertions
+		self.assertEqual(res.status_code, status.HTTP_200_OK)
+		self.assertEqual(res.data['completed'], True)
+		self.assertEqual(res.data['completed_by'], self.user.id)
+		self.assertIn('completed_at', res.data)
+
+
