@@ -7,6 +7,7 @@ class Todo(BaseModel):
     """Todo model"""
     title = models.CharField(max_length=255)
     description = models.CharField(max_length=255, blank=True)
+    created_by = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='creator')
     completed = models.BooleanField(default=False)
     completed_at = models.DateTimeField(default=None, null=True)
     completed_by = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, default=None, null=True)
