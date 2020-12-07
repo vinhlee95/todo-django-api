@@ -49,6 +49,17 @@ class TodoApiTest(AuthenticatedTestCase):
 		self.assertEqual(res.status_code, status.HTTP_200_OK)
 		self.assertEqual(res.data, serializer.data)
 
+	def test_get_todo_by_id(self):
+		"""Test if we can get a todo by id"""
+		mocked_todo = mock_todo()
+		res = self.client.get(get_detail_url(mocked_todo.id))
+		todo = Todo.objects.get(id=mocked_todo.id)
+		serializer = TodoSerializer(instance=todo)
+
+		# Assertions
+		self.assertEqual(res.status_code, status.HTTP_200_OK)
+		self.assertEqual(res.data, serializer.data)
+
 	def test_create_todo(self):
 		"""Test if we can create a new todo"""
 		payload = {'title': 'Go to school', 'completed': False}

@@ -15,7 +15,7 @@ from .serializer import TodoSerializer
 # 	permission_classes = (IsAuthenticated,)
 # 	queryset = Todo.objects.all()
 
-class TodoView(views.APIView):
+class ListTodoView(views.APIView):
 	permission_classes = (IsAuthenticated,)
 
 	def get(self, request):
@@ -30,6 +30,15 @@ class TodoView(views.APIView):
 		if serializer.is_valid(raise_exception=True):
 			saved_todo = serializer.save()
 		return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class TodoView(views.APIView):
+	permission_classes = (IsAuthenticated,)
+
+	def get(self, request, pk):
+		"""Todo view for retrieving a todo"""
+		todo = get_object_or_404(Todo, id=pk)
+		serializer = TodoSerializer(instance=todo)
+		return Response(serializer.data)
 
 	def put(self, request, pk):
 		"""Update a todo"""
