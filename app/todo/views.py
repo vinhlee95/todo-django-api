@@ -20,7 +20,7 @@ class ListTodoView(views.APIView):
 
 	def get(self, request):
 		"""Todo view for listing all todos"""
-		todos = Todo.objects.all()
+		todos = Todo.objects.filter(created_by=request.user)
 		serializer = TodoSerializer(todos, many=True)
 		return Response(serializer.data)
 
@@ -28,7 +28,7 @@ class ListTodoView(views.APIView):
 		"""Create a new todo"""
 		serializer = TodoSerializer(data=request.data)
 		if serializer.is_valid(raise_exception=True):
-			saved_todo = serializer.save()
+			saved_todo = serializer.save(created_by=request.user)
 		return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class TodoView(views.APIView):

@@ -1,5 +1,4 @@
 from django.test import TestCase
-from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 
@@ -39,8 +38,8 @@ class TodoApiTest(AuthenticatedTestCase):
 
 	def test_retrieve_todos(self):
 		"""Test if we can get all todos in db"""
-		mock_todo()
-		mock_todo()
+		mock_todo(created_by=self.user)
+		mock_todo(created_by=self.user)
 		res = self.client.get(TODO_URL)
 
 		serializer = TodoSerializer(Todo.objects.all(), many=True)
@@ -51,7 +50,7 @@ class TodoApiTest(AuthenticatedTestCase):
 
 	def test_get_todo_by_id(self):
 		"""Test if we can get a todo by id"""
-		mocked_todo = mock_todo()
+		mocked_todo = mock_todo(created_by=self.user)
 		res = self.client.get(get_detail_url(mocked_todo.id))
 		todo = Todo.objects.get(id=mocked_todo.id)
 		serializer = TodoSerializer(instance=todo)
@@ -81,7 +80,8 @@ class TodoApiTest(AuthenticatedTestCase):
 		"""Test if we can update the todo"""
 		mocked_todo_payload = {
 			'title': 'Do laundry',
-			'completed': False
+			'completed': False,
+			'created_by': self.user
 		}
 		mocked_todo = mock_todo(**mocked_todo_payload)
 		update_todo_payload = {
@@ -97,7 +97,7 @@ class TodoApiTest(AuthenticatedTestCase):
 
 	def test_delete_todo(self):
 		"""Test if we can delete a todo"""
-		todo = mock_todo()
+		todo = mock_todo(created_by=self.user)
 		res = self.client.delete(get_detail_url(todo.id))
 
 		self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -106,7 +106,7 @@ class TodoApiTest(AuthenticatedTestCase):
 
 	def test_completed_todo(self):
 		"""Test if a todo is completed by an user"""
-		todo = mock_todo()
+		todo = mock_todo(created_by=self.user)
 		payload = {'completed': True}
 		res = self.client.patch(get_detail_url(todo.id), payload)
 
@@ -116,4 +116,17 @@ class TodoApiTest(AuthenticatedTestCase):
 		self.assertEqual(res.data['completed_by'], self.user.id)
 		self.assertIn('completed_at', res.data)
 
+	def test_retrieve_own_todos(self):
+		"""Test if we can retrieve todos of an user"""
+		mock_todo(created_by=self.user)
+		mock_todo(created_by=self.user)
+		new_user = self.mock_user(username='hello_username')
+		mock_todo(created_by=new_user)
 
+		res = self.client.get(TODO_URL)
+		own_todos = Todo.objects.filter(created_by=self.user)
+		serializer = TodoSerializer(own_todos, many=True)
+
+		# Assertions
+		self.assertEqual(len(res.data), 2)
+		self.assertEqual(res.data, serializer.data)

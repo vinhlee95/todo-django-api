@@ -14,9 +14,9 @@ class AuthenticatedTestCase(TestCase):
     self.user = self.mock_user()
     self.client.force_authenticate(user=self.user)
 
-  def mock_user(self):
+  def mock_user(self, username='test_username'):
     """Mock a user"""
     return get_user_model().objects.create(
-      username = "test_username",
-      password = "password"
+      username=username,
+      password="password"
     )
