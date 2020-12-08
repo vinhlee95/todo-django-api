@@ -95,6 +95,20 @@ class TodoApiTest(AuthenticatedTestCase):
 		self.assertEqual(res.data['title'], update_todo_payload['title'])
 		self.assertEqual(res.data['completed'], update_todo_payload['completed'])
 
+	def test_update_own_todo(self):
+		"""Test if user can only update own todos"""
+		own_todo = mock_todo(created_by=self.user)
+		new_user = self.mock_user(username="foobar")
+		not_own_todo = mock_todo(created_by=new_user)
+
+		res = self.client.patch(get_detail_url(own_todo.id), {'title': 'Hi'})
+		res_2 = self.client.patch(get_detail_url(not_own_todo.id), {'title': 'Hola'})
+		res_3 = self.client.put(get_detail_url(not_own_todo.id), {'title': 'Hola'})
+
+		# Assertions
+		self.assertEqual(res.status_code, status.HTTP_200_OK)
+		self.assertEqual(res_2.status_code, status.HTTP_403_FORBIDDEN)
+
 	def test_delete_todo(self):
 		"""Test if we can delete a todo"""
 		todo = mock_todo(created_by=self.user)

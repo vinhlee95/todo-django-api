@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.core.exceptions import PermissionDenied
 
 from core.models.todo import Todo
 from .serializer import TodoSerializer
@@ -43,6 +44,7 @@ class TodoView(views.APIView):
 	def put(self, request, pk):
 		"""Update a todo"""
 		saved_todo = get_object_or_404(Todo, id=pk)
+		self.check_permission(instance=saved_todo, user_id=request.user.id)
 		serializer = TodoSerializer(instance=saved_todo, data=request.data)
 		if serializer.is_valid(raise_exception=True):
 			serializer.save()
@@ -51,9 +53,10 @@ class TodoView(views.APIView):
 	def patch(self, request, pk):
 		"""Partially update a todo"""
 		saved_todo = get_object_or_404(Todo, id=pk)
+		self.check_permission(instance=saved_todo, user_id=request.user.id)
 		serializer = TodoSerializer(instance=saved_todo, data=request.data, partial=True)
 		if serializer.is_valid(raise_exception=True):
-			if request.data['completed']:
+			if 'completed' in request.data and request.data['completed']:
 				serializer.save(completed_by=request.user, completed_at=timezone.now())
 			else:
 				serializer.save()
@@ -64,6 +67,11 @@ class TodoView(views.APIView):
 		todo = get_object_or_404(Todo, id=pk)
 		todo.delete()
 		return Response({'message': 'success'})
+
+	def check_permission(self, instance, user_id):
+		if instance.created_by_id != user_id:
+			raise PermissionDenied()
+
 
 
 
